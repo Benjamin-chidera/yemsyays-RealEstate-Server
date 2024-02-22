@@ -33,7 +33,7 @@ const propertySchema = new Schema(
     },
     media: {
       images: {
-        type: [String],
+        type: [],
       },
       video: {
         type: String,
@@ -49,7 +49,7 @@ const propertySchema = new Schema(
     },
     propertyType: {
       type: String,
-      default: "House",
+      default: "house",
       enum: ["house", "land"],
     },
 

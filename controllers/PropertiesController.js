@@ -19,21 +19,19 @@ const createProperty = async (req, res) => {
     phoneNumber,
     whatsappNumber,
   } = req.body;
-  const { video, images, avatar } = req.files;
-  try {
-    // Validate if req.files and req.files.images exist
-    if (!video || !images || !avatar) {
-      return res.status(400).json({ error: "Missing files" });
-    }
 
-    // Uploading avatar image
-    const avatarResult = await cloudinary.uploader.upload(avatar.tempFilePath, {
+  const video = req.files.video.tempFilePath;
+  const images = req.files.images;
+  const avatar = req.files.avatar.tempFilePath;
+
+  try {
+    const avatarResult = await cloudinary.uploader.upload(avatar, {
       use_filename: true,
       folder: "yemsays",
     });
-    fs.unlinkSync(avatar.tempFilePath);
+    // deleting temporary files path
+    fs.unlinkSync(req.files.avatar.tempFilePath);
 
-    // Uploading images
     const imageUploadPromises = images.map(async (image) => {
       const result = await cloudinary.uploader.upload(image.tempFilePath, {
         use_filename: true,
@@ -44,15 +42,14 @@ const createProperty = async (req, res) => {
     });
     const uploadedImages = await Promise.all(imageUploadPromises);
 
-    // Uploading video
-    const videoResult = await cloudinary.uploader.upload(video.tempFilePath, {
+    const videoResult = await cloudinary.uploader.upload(video, {
       resource_type: "video",
       folder: "yemsaysvideos",
     });
-    fs.unlinkSync(video.tempFilePath);
+    fs.unlinkSync(req.files.video.tempFilePath);
 
     const media = {
-      images: uploadedImages,
+      images: [...uploadedImages],
       video: videoResult.secure_url,
     };
 
@@ -78,11 +75,10 @@ const createProperty = async (req, res) => {
       media,
       salesSupport,
     });
-
     res.status(201).json({ success: true, property });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.log(error);
+    res.status(400).json(error);
   }
 };
 
@@ -95,7 +91,28 @@ const getProperties = async (req, res) => {
   }
 };
 
+const getSingleProperty = async (req, res) => {
+  const { propertyId } = req.params;
+  try {
+    const property = await Property.findById({_id: propertyId});
+     res.status(200).json({ msg: "success", property });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getLatestProperty = async (req, res) => {
+  try {
+    const latestProperties = await Property.find().sort("-createdAt").limit(4)
+     res.status(200).json({ msg: "success", property: latestProperties });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createProperty,
   getProperties,
+  getSingleProperty,
+  getLatestProperty,
 };
