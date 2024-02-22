@@ -43,6 +43,7 @@ const propertySchema = new Schema(
       type: String,
       required: true,
     },
+
     price: {
       type: Number,
       required: true,
@@ -64,24 +65,29 @@ const propertySchema = new Schema(
       default: "available",
       enum: ["available", "sold"],
     },
+
     bathroom: {
       type: Number,
       default: 0,
       min: 0,
     },
+
     bedroom: {
       type: Number,
       default: 0,
       min: 0,
     },
+
     garage: {
       type: Boolean,
       default: false,
     },
+
     squareFeet: {
       type: Number,
       min: 0,
     },
+    
     salesSupport: ManagerSchema,
   },
   { timestamps: true }

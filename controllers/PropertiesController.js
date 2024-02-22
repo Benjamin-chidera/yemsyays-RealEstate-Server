@@ -84,8 +84,21 @@ const createProperty = async (req, res) => {
 
 const getProperties = async (req, res) => {
   try {
+    // const similarLand = await Property.findOne({ propertyType: "land" }).limit(3)
+    // const similarHouse = await Property.findOne({ propertyType: "house" }).limit(3)
+
+    // const similarProperties = [
+    //   ...similarLand,
+    //   ...similarHouse,
+    // ]
+
     const properties = await Property.find();
-    res.status(200).json({ msg: "success", properties });
+    res.status(200).json({
+      msg: "success",
+      properties,
+      NumOfProperties: properties.length,
+      similarProperties,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -94,8 +107,13 @@ const getProperties = async (req, res) => {
 const getSingleProperty = async (req, res) => {
   const { propertyId } = req.params;
   try {
-    const property = await Property.findById({_id: propertyId});
-     res.status(200).json({ msg: "success", property });
+    const property = await Property.findById({ _id: propertyId });
+
+    const propertyType = property.propertyType;
+
+    const similarProperties = await Property.find({ propertyType }).limit(6)
+
+    res.status(200).json({ msg: "success", property, similarProperties });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -103,12 +121,12 @@ const getSingleProperty = async (req, res) => {
 
 const getLatestProperty = async (req, res) => {
   try {
-    const latestProperties = await Property.find().sort("-createdAt").limit(4)
-     res.status(200).json({ msg: "success", property: latestProperties });
+    const recentProperty = await Property.find().sort("-createdAt").limit(4);
+    res.status(200).json({ msg: "success", property: recentProperty });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 module.exports = {
   createProperty,

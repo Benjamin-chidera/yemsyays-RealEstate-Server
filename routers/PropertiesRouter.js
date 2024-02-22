@@ -6,8 +6,8 @@ const {
   getLatestProperty
 } = require("../controllers/PropertiesController");
 
+router.get("/recent", getLatestProperty);
 router.route("/").post(createProperty).get(getProperties);
 router.route("/:propertyId").get(getSingleProperty)
-router.get("/latest", getLatestProperty);
 
 module.exports = router;
