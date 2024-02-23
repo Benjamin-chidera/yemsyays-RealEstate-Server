@@ -79,15 +79,16 @@ const propertySchema = new Schema(
     },
 
     garage: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: "no",
+      enum: ["yes", "no"],
     },
 
     squareFeet: {
       type: Number,
       min: 0,
     },
-    
+
     salesSupport: ManagerSchema,
   },
   { timestamps: true }

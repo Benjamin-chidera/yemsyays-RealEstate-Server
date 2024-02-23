@@ -11,8 +11,8 @@ const createProperty = async (req, res) => {
     description,
     tags,
     propertyStatus,
-    bedroom,
     bathroom,
+    bedroom,
     garage,
     squareFeet,
     name,
@@ -20,34 +20,39 @@ const createProperty = async (req, res) => {
     whatsappNumber,
   } = req.body;
 
-  const video = req.files.video.tempFilePath;
-  const images = req.files.images;
-  const avatar = req.files.avatar.tempFilePath;
-
   try {
-    const avatarResult = await cloudinary.uploader.upload(avatar, {
-      use_filename: true,
-      folder: "yemsays",
-    });
-    // deleting temporary files path
-    fs.unlinkSync(req.files.avatar.tempFilePath);
+    // Upload avatar to Cloudinary
+    const avatarResult = await cloudinary.uploader.upload(
+      req.files.avatar.tempFilePath,
+      {
+        use_filename: true,
+        folder: "yemsays",
+      }
+    );
+    fs.unlinkSync(req.files.avatar.tempFilePath); // Delete temp file
 
-    const imageUploadPromises = images.map(async (image) => {
+    // Upload images to Cloudinary
+    const imageUploadPromises = req.files.images.map(async (image) => {
       const result = await cloudinary.uploader.upload(image.tempFilePath, {
         use_filename: true,
         folder: "yemsays",
       });
-      fs.unlinkSync(image.tempFilePath);
+      fs.unlinkSync(image.tempFilePath); // Delete temp file
       return result.secure_url;
     });
     const uploadedImages = await Promise.all(imageUploadPromises);
 
-    const videoResult = await cloudinary.uploader.upload(video, {
-      resource_type: "video",
-      folder: "yemsaysvideos",
-    });
-    fs.unlinkSync(req.files.video.tempFilePath);
+    // Upload video to Cloudinary
+    const videoResult = await cloudinary.uploader.upload(
+      req.files.video.tempFilePath,
+      {
+        resource_type: "video",
+        folder: "yemsaysvideos",
+      }
+    );
+    fs.unlinkSync(req.files.video.tempFilePath); // Delete temp file
 
+    // Prepare media and sales support objects
     const media = {
       images: [...uploadedImages],
       video: videoResult.secure_url,
@@ -60,6 +65,7 @@ const createProperty = async (req, res) => {
       avatar: avatarResult.secure_url,
     };
 
+    // Create property in the database
     const property = await Property.create({
       title,
       location,
@@ -68,36 +74,45 @@ const createProperty = async (req, res) => {
       description,
       tags,
       propertyStatus,
-      bedroom,
       bathroom,
+      bedroom,
       garage,
       squareFeet,
       media,
       salesSupport,
     });
+
     res.status(201).json({ success: true, property });
   } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
+    console.error(error);
+    res
+      .status(400)
+      .json({ success: false, error: "Failed to create property." });
   }
 };
 
 const getProperties = async (req, res) => {
+  const { type, location, price } = req.query;
+
+  const queryObj = {};
+  if (type) {
+    queryObj.propertyType = { $regex: type, $options: "i" };
+  }
+
+  if (location) {
+    queryObj.location = { $regex: location, $options: "i" };
+  }
+
+  if (price) {
+    queryObj.price = { $eq: price };
+  }
+
   try {
-    // const similarLand = await Property.findOne({ propertyType: "land" }).limit(3)
-    // const similarHouse = await Property.findOne({ propertyType: "house" }).limit(3)
-
-    // const similarProperties = [
-    //   ...similarLand,
-    //   ...similarHouse,
-    // ]
-
-    const properties = await Property.find();
+    const properties = await Property.find(queryObj).sort("-createdAt");
     res.status(200).json({
       msg: "success",
       properties,
       NumOfProperties: properties.length,
-      // similarProperties,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -135,7 +150,7 @@ const recentProperties = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 const deleteProperty = async (req, res) => {
   const { propertyId } = req.params;
@@ -147,7 +162,6 @@ const deleteProperty = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const updateProperty = async (req, res) => {
   const { propertyId } = req.params;
@@ -247,8 +261,6 @@ const updateProperty = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
-
-
 
 module.exports = {
   createProperty,
