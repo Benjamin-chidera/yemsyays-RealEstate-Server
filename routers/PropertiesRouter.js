@@ -5,17 +5,21 @@ const {
   getSingleProperty,
   getLatestProperty,
   deleteProperty,
-  updateProperty, 
-  recentProperties
+  updateProperty,
+  recentProperties,
 } = require("../controllers/PropertiesController");
+const { auth, permission } = require("../middleware/Auth");
 
 router.get("/latest", getLatestProperty);
 router.get("/recent", recentProperties);
-router.route("/").post(createProperty).get(getProperties);
+router
+  .route("/")
+  .post(auth, permission("admin"), createProperty)
+  .get(getProperties);
 router
   .route("/:propertyId")
-  .get(getSingleProperty)
-  .delete(deleteProperty)
-  .patch(updateProperty);
+  .get(auth, getSingleProperty)
+  .delete(auth, permission("admin"), deleteProperty)
+  .patch(auth, permission("admin"), updateProperty);
 
 module.exports = router;

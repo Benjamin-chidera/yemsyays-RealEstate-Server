@@ -7,6 +7,7 @@ const inspectionRouter = require("./routers/inspectionRouter");
 const propertyRouter = require("./routers/PropertiesRouter");
 const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
+const authRouter = require("./routers/authRouter");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(fileUpload({ useTempFiles: true }));
 app.use("/api/v1/inspection", inspectionRouter);
 app.use("/api/v1/properties", propertyRouter);
+app.use("/api/v1/", authRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ msg: "This is the home page" });
