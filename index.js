@@ -1,10 +1,10 @@
 require("dotenv").config();
-const dotenv = require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const inspectionRouter = require("./routers/inspectionRouter");
 const propertyRouter = require("./routers/PropertiesRouter");
+const reviewRouter = require("./routers/reviewRouter");
 const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
 const authRouter = require("./routers/authRouter");
@@ -24,6 +24,7 @@ app.use(fileUpload({ useTempFiles: true }));
 app.use("/api/v1/inspection", inspectionRouter);
 app.use("/api/v1/properties", propertyRouter);
 app.use("/api/v1/", authRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ msg: "This is the home page" });
