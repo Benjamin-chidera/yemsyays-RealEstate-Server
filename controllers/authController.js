@@ -26,7 +26,7 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
   try {
     const user = await USER.findOne({ email });
 
@@ -41,7 +41,7 @@ const signIn = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { userId: user._id, role: user.role, username: user.username},
       process.env.TOKEN,
       {
         expiresIn: "2h",
@@ -54,6 +54,7 @@ const signIn = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        username: user.username,
       },
     });
   } catch (error) {

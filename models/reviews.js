@@ -38,9 +38,10 @@ const reviewsSchema = new Schema(
       required: true,
     },
     author: {
-      type: mongoose.Types.ObjectId, ref: "User",
-      // required: true,
-    }
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,
