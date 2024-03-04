@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const signUp = async (req, res) => {
-  const { email, password, role, username } = req.body;
+  const { email, password, role } = req.body;
   try {
     const isRegistered = await USER.findOne({ email });
 
@@ -14,11 +14,11 @@ const signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
-    const user = await USER.create({ email, password: hashed, role, username });
+    const user = await USER.create({ email, password: hashed, role });
 
     res.status(201).json({
       msg: "User created successfully",
-      users: { email: user.email, role: user.role, username: user.username },
+      users: { email: user.email, role: user.role },
     });
   } catch (error) {
     res.status(404).json({ err: error.message });
@@ -54,7 +54,6 @@ const signIn = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
-        username: user.username,
       },
     });
   } catch (error) {
