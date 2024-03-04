@@ -40,24 +40,31 @@ const getReviews = async (req, res) => {
   }
 };
 
-const getAReview = async (req, res) => {
-  const { authorId } = req.params;
-
+const recentReview = async (req, res) => {
   try {
-    const review = await Reviews.find({ author: authorId }).populate("author");
-
-    if (!review) {
-      return res.status(404).json({ err: "Not Found" });
-    }
-
-    res.status(200).json({ msg: "successfully", review });
+    const reviews = await Reviews.find().sort("-createdAt").limit(1);
+    res.status(200).json({ msg: "success", recentReview: reviews });
   } catch (error) {
     res.status(404).json({ err: error.message });
   }
 };
 
-// const authReview = async (req, res) => {
+// const getAReview = async (req, res) => {
+//   const { authorId } = req.params;
 
-// }
+//   try {
+//     const review = await Reviews.find({ author: authorId }).populate("author");
 
-module.exports = { createReviews, getReviews, getAReview };
+//     if (!review) {
+//       return res.status(404).json({ err: "Not Found" });
+//     }
+
+//     res.status(200).json({ msg: "successfully", review });
+//   } catch (error) {
+//     res.status(404).json({ err: error.message });
+//   }
+// };
+
+module.exports = { createReviews, getReviews,
+  //  getAReview, 
+   recentReview };

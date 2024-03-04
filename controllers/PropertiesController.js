@@ -95,6 +95,7 @@ const getProperties = async (req, res) => {
   const { type, location, price } = req.query;
 
   const queryObj = {};
+
   if (type) {
     queryObj.propertyType = { $regex: type, $options: "i" };
   }
