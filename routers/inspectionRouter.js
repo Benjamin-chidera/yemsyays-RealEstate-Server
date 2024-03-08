@@ -8,8 +8,8 @@ const { auth, permission } = require("../middleware/Auth");
 
 router
   .route("/")
-  .post(auth, createInspection)
-  .get(auth, getInspection);
+  .post(auth, permission("user"), createInspection)
+  .get(auth, permission("admin"), getInspection);
 
 router.delete("/:inspectionId", auth, permission("admin"), deleteInspection);
 

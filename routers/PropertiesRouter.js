@@ -18,7 +18,7 @@ router
   .get(getProperties);
 router
   .route("/:propertyId")
-  .get(auth, getSingleProperty)
+  .get(auth, permission("admin"), getSingleProperty)
   .delete(auth, permission("admin"), deleteProperty)
   .patch(auth, permission("admin"), updateProperty);
 
