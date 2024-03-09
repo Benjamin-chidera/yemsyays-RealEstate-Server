@@ -36,6 +36,16 @@ const inspectionSchema = new Schema(
     message: {
       type: String,
     },
+    creator: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    image: {
+      type: String,
+      default:
+        "https://images.pexels.com/photos/18625018/pexels-photo-18625018/free-photo-of-model-sitting-and-posing-with-arms-crossed-on-beach.png?auto=compress&cs=tinysrgb&w=400&lazy=load",
+    },
   },
   { timestamps: true }
 );

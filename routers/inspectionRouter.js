@@ -3,6 +3,7 @@ const {
   createInspection,
   getInspection,
   deleteInspection,
+  getRecentInspection,
 } = require("../controllers/inspectionController");
 const { auth, permission } = require("../middleware/Auth");
 
@@ -13,4 +14,5 @@ router
 
 router.delete("/:inspectionId", auth, permission("admin"), deleteInspection);
 
+router.get("/recent", auth, permission("admin"), getRecentInspection);
 module.exports = router;
