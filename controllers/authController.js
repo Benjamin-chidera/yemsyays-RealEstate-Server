@@ -1,9 +1,11 @@
 const USER = require("../models/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 const signUp = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password, role, name } = req.body;
   try {
     const isRegistered = await USER.findOne({ email });
 
@@ -14,11 +16,32 @@ const signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
-    const user = await USER.create({ email, password: hashed, role });
+    const imageResult = await cloudinary.uploader.upload(
+      req.files.image.tempFilePath,
+      {
+        use_filename: true,
+        folder: "userImage",
+      }
+    );
+
+    fs.unlinkSync(req.files.image.tempFilePath);
+
+    const user = await USER.create({
+      email,
+      password: hashed,
+      role,
+      name,
+      image: imageResult.secure_url,
+    });
 
     res.status(201).json({
       msg: "User created successfully",
-      users: { email: user.email, role: user.role },
+      users: {
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        image: user.image,
+      },
     });
   } catch (error) {
     res.status(404).json({ err: error.message });
@@ -41,10 +64,10 @@ const signIn = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role,},
+      { userId: user._id, role: user.role, name: user.name, image: user.image},
       process.env.TOKEN,
       {
-        expiresIn: "2h",
+        expiresIn: "2d",
       }
     );
 
@@ -54,6 +77,8 @@ const signIn = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        // name: user.name,
+        // image: user.image
       },
     });
   } catch (error) {

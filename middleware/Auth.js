@@ -15,7 +15,8 @@ const auth = async (req, res, next) => {
     req.user = {
       userId: payload.userId,
       role: payload.role,
-      username: payload.username
+      name: payload.name,
+      image: payload.image
     };
     next();
   } catch (error) {

@@ -7,7 +7,7 @@ const {
 const router = require("express").Router();
 const { auth, permission } = require("../middleware/Auth");
 
-router.route("/").get(getReviews).post(auth, createReviews);
+router.route("/").get(getReviews).post(auth, permission("user"),createReviews);
 // router.get("/:authorId", getAReview)
 router.get("/recent", recentReview);
 
