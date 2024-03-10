@@ -8,6 +8,7 @@ const reviewRouter = require("./routers/reviewRouter");
 const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
 const authRouter = require("./routers/authRouter");
+const contactRouter = require("./routers/contactRouter");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use("/api/v1/inspection", inspectionRouter);
 app.use("/api/v1/properties", propertyRouter);
 app.use("/api/v1/", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/contact", contactRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ msg: "This is the home page" });
