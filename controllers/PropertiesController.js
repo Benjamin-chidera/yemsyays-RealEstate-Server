@@ -190,7 +190,8 @@ const updateProperty = async (req, res) => {
 
   const images =
     req.files && req.files.images ? req.files.images.tempFilePath : undefined;
-  const avatar = req.files && req.files.avatar ? req.files.avatar.tempFilePath : undefined;
+  const avatar =
+    req.files && req.files.avatar ? req.files.avatar.tempFilePath : undefined;
 
   try {
     let updateData = {};
@@ -268,6 +269,29 @@ const updateProperty = async (req, res) => {
   }
 };
 
+const updatePropertyStatus = async (req, res) => {
+  const { propertyId } = req.params;
+
+  const { propertyStatus } = req.body;
+  try {
+    let updatedStatus = {};
+
+    if (propertyStatus) {
+      updatedStatus.propertyStatus = propertyStatus;
+    }
+
+    const property = await Property.findByIdAndUpdate(
+      { _id: propertyId },
+      updatedStatus,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ success: true, property });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createProperty,
   getProperties,
@@ -276,4 +300,5 @@ module.exports = {
   deleteProperty,
   updateProperty,
   recentProperties,
+  updatePropertyStatus,
 };

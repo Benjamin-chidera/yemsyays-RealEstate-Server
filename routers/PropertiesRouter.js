@@ -7,6 +7,7 @@ const {
   deleteProperty,
   updateProperty,
   recentProperties,
+  updatePropertyStatus,
 } = require("../controllers/PropertiesController");
 const { auth, permission } = require("../middleware/Auth");
 
@@ -21,5 +22,12 @@ router
   .get(auth, getSingleProperty)
   .delete(auth, permission("admin"), deleteProperty)
   .patch(auth, permission("admin"), updateProperty);
+
+router.patch(
+  "/propertyStatus/:propertyId",
+  auth,
+  permission("admin"),
+  updatePropertyStatus
+);
 
 module.exports = router;
