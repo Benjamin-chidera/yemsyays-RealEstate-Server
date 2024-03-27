@@ -185,9 +185,12 @@ const updateProperty = async (req, res) => {
     whatsappNumber,
   } = req.body;
 
-  const video = req.files.video ? req.files.video.tempFilePath : undefined;
-  const images = req.files.images;
-  const avatar = req.files.avatar ? req.files.avatar.tempFilePath : undefined;
+  const videoFile =
+    req.files && req.files.video ? req.files.video.tempFilePath : undefined;
+
+  const images =
+    req.files && req.files.images ? req.files.images.tempFilePath : undefined;
+  const avatar = req.files && req.files.avatar ? req.files.avatar.tempFilePath : undefined;
 
   try {
     let updateData = {};
@@ -242,14 +245,14 @@ const updateProperty = async (req, res) => {
     }
 
     // Check if video is provided
-    if (video) {
-      const videoResult = await cloudinary.uploader.upload(video, {
+    if (videoFile) {
+      const videoResult = await cloudinary.uploader.upload(videoFile, {
         resource_type: "video",
         folder: "yemsaysvideos",
       });
       fs.unlinkSync(req.files.video.tempFilePath);
       updateData.media = {
-        video: videoResult.secure_url,
+        videoFile: videoResult.secure_url,
       };
     }
 
